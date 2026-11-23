@@ -1,22 +1,26 @@
 # Omni Translate Web
 
-A public, installable web preview of the **OmniTranslate** Android app UI.
+A fast, installable, premium-feel translation workspace for the web — inspired by **OmniTranslate**.
 
-> This is a hand-written HTML/CSS/JS replica of the app's screens and flows. It is **not** generated from the Kotlin/Compose source, so changes to the native app do not sync here automatically.
+**Live:** https://ahmedshehjad.github.io/OmniTranslate-Web/
 
-## Live site
+## Install on phone (Desktop shortcut / Add to Home screen)
 
-Once GitHub Pages is enabled for this repository, the site is served from:
+1. Open the live site in Chrome / Edge / Android browser.
+2. Tap menu (⋮) → **Add to Home screen** or **Install app**.
+3. Launch it from your home screen like a native app.
 
-- `https://ahmedshehjad.github.io/OmniTranslate-Web/`
+## Features
 
-## Install as a phone shortcut (Add to Home screen)
-
-1. Open the live site in Chrome/Edge/Android browser.
-2. Tap the browser menu → **Add to Home screen** / **Install app**.
-3. Confirm — a shortcut icon appears on your home screen and opens the site in a standalone window.
-
-The included `manifest.webmanifest` and `sw.js` make the app shell installable and cacheable for quick repeat access.
+- **Translator** — auto-detect, 17 languages, swap, copy, share, text-to-speech, voice input, keyboard shortcuts (`Ctrl+Enter` translate, `Ctrl+K` focus, `Ctrl+L` swap)
+- **Quick Translate** — dashboard widget for fast one-off translations
+- **Quick Bubble** — draggable floating mini-translator, remembers position
+- **History** — local, searchable, export/import JSON backup, reuse/delete/favorite
+- **Favorites / Phrasebook** — star translations for quick reuse
+- **Image OCR** — extract text from images/screenshots in-browser (Tesseract.js), send directly to translator
+- **PWA** — installable, standalone, service-worker cached app shell
+- **Theme & layout** — dark/light mode, compact layout
+- **Privacy-first** — history/favorites/settings stay in browser local storage; text is sent to translation API only when you request online translation
 
 ## Run locally
 
@@ -24,27 +28,9 @@ The included `manifest.webmanifest` and `sw.js` make the app shell installable a
 python3 -m http.server 8000 --bind 0.0.0.0 --directory .
 ```
 
-Then open `http://127.0.0.1:8000/`.
-
-## What works
-
-- 6 tabs: Dashboard, Translator, Clipboard, Vision OCR, Offline Models, Bubble Settings
-- Online translation via the public MyMemory API; small offline demo dictionary fallback
-- Browser text-to-speech, copy, search, and simulated model downloads
-- Floating bubble: draggable, click to open a mini translate card
-- `localStorage` persistence for history, settings, models, bubble position
-- Developer credit card with the original `developer_profile.png` asset
-
-## Simulated (browser limitations)
-
-- Android `SYSTEM_ALERT_WINDOW` overlay, Accessibility service, foreground service
-- ML Kit on-device models, AdMob ads, Android TTS engine
+Open `http://127.0.0.1:8000/`.
 
 ## Credits
 
 - Developed by **Md Jubair** · GETMODDEVICE Official · Android & AI Engineering
-- Source app: [`ahmedshehjad/OmniTranslate`](https://github.com/ahmedshehjad/OmniTranslate) (current `main`)
-
-## License note
-
-The source Android project is distributed under a **Personal Use Only License**. This public repository is a non-commercial, personal UI preview derived from that project; all credit remains with the original copyright holder. Do not redistribute or use commercially without prior written permission.
+- Source inspiration: [ahmedshehjad/OmniTranslate](https://github.com/ahmedshehjad/OmniTranslate)

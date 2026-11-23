@@ -1,5 +1,5 @@
 /* Omni Translate Web — simple offline-first service worker */
-const CACHE = 'omnitranslate-web-v1';
+const CACHE = 'omnitranslate-web-v2';
 const ASSETS = [
   './',
   './index.html',
