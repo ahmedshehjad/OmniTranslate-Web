@@ -113,7 +113,7 @@ async function copyText(text){
 }
 async function shareText(text){
   const t=String(text||'').trim(); if(!t){ toast('Nothing to share'); return; }
-  if(navigator.share){ try{ await navigator.share({title:'Omni Translate', text:t}); return; }catch(_){} }
+  if(navigator.share){ try{ await navigator.share({title:'Omni Translate Web', text:t}); return; }catch(_){} }
   await copyText(t);
 }
 

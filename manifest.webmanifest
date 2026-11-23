@@ -1,7 +1,7 @@
 {
   "name": "Omni Translate Web",
-  "short_name": "OmniTranslate",
-  "description": "A web preview of OmniTranslate — floating bubble, translator, clipboard history, OCR, offline models, and settings.",
+  "short_name": "Omni Translate Web",
+  "description": "Omni Translate Web — fast, installable translation workspace with voice, OCR, history, favorites, and quick bubble.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
