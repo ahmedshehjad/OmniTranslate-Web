@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#080c16" />
+  <title>OmniTranslate — Web Demo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="splash" class="splash" aria-hidden="true">
+    <div class="splash-inner">
+      <div class="splash-logo">🌐</div>
+      <div class="splash-title">OmniTranslate</div>
+      <div class="splash-sub">Floating Screen &amp; Smart Translation Hub</div>
+      <div class="splash-bar"><i></i></div>
+      <div class="splash-foot">Web demo · loading UI…</div>
+    </div>
+  </div>
+
+  <div id="app" class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">🌐</span>
+        <span class="brand-name">OmniTranslate</span>
+        <span id="liveBadge" class="live-badge idle"><i></i><span>IDLE</span></span>
+      </div>
+      <div class="top-actions">
+        <button id="promoBtn" class="icon-btn" title="Community" aria-label="Community">🔗</button>
+        <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Settings">⚙️</button>
+        <button id="bubbleBtn" class="icon-btn bubble-btn" title="Toggle floating bubble" aria-label="Toggle floating bubble">🧊</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="sidebar" aria-label="Main navigation">
+        <button class="nav-item active" data-tab="0"><span class="nav-ico">🏠</span><span>Dashboard</span></button>
+        <button class="nav-item" data-tab="1"><span class="nav-ico">🌐</span><span>Translator</span></button>
+        <button class="nav-item" data-tab="2"><span class="nav-ico">📋</span><span>Clipboard</span></button>
+        <button class="nav-item" data-tab="3"><span class="nav-ico">🖼️</span><span>Vision OCR</span></button>
+        <button class="nav-item" data-tab="4"><span class="nav-ico">⬇️</span><span>Offline</span></button>
+        <button class="nav-item" data-tab="5"><span class="nav-ico">⚙️</span><span>Settings</span></button>
+        <div class="sidebar-foot">
+          <div class="mini-dot"></div>
+          <span>Web demo v1.0<br /><small>local preview build</small></span>
+        </div>
+      </nav>
+
+      <main class="content" id="content">
+        <!-- 0 · DASHBOARD -->
+        <section class="screen active" data-screen="0">
+          <div class="hero card">
+            <div class="hero-copy">
+              <div class="eyebrow">SMART TRANSLATION HUB</div>
+              <h1>Translate anything,<br /><span class="grad">right where you are.</span></h1>
+              <p>একই ইন্টারফেস — অনুবাদ, ক্লিপবোর্ড হিস্ট্রি, OCR এবং floating bubble। ওয়েব ডেমোতে Android-নির্দিষ্ট ফিচারগুলো সিমুলেটেড।</p>
+              <div class="hero-actions">
+                <button class="btn primary" data-goto="1">🌐 Translate now</button>
+                <button class="btn ghost" id="dashBubbleBtn">🧊 Toggle bubble</button>
+              </div>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+              <div class="orb orb-a"></div><div class="orb orb-b"></div>
+              <div class="hero-bubble">🇧🇩<span>বাংলা</span></div>
+            </div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat card"><span class="stat-ico">🧊</span><b id="statBubble">IDLE</b><small>Floating bubble</small></div>
+            <div class="stat card"><span class="stat-ico">📋</span><b id="statHistory">0</b><small>History items</small></div>
+            <div class="stat card"><span class="stat-ico">⬇️</span><b id="statModels">0</b><small>Offline models</small></div>
+            <div class="stat card"><span class="stat-ico">🌐</span><b id="statMode">—</b><small>Last translation</small></div>
+          </div>
+
+          <div class="two-col">
+            <div class="card">
+              <div class="card-head"><h2>Quick translate</h2><span class="tag">dashboard</span></div>
+              <div class="quick-row">
+                <select id="qFrom" class="select" aria-label="From language"></select>
+                <button id="qSwap" class="icon-btn" title="Swap">⇄</button>
+                <select id="qTo" class="select" aria-label="To language"></select>
+              </div>
+              <textarea id="qInput" class="textarea" rows="3" placeholder="Type or paste text here…"></textarea>
+              <div class="row-between">
+                <span id="qMode" class="hint">Ready</span>
+                <button id="qTranslate" class="btn primary small">Translate</button>
+              </div>
+              <div id="qResult" class="result-box empty">Result will appear here.</div>
+            </div>
+            <div class="card">
+              <div class="card-head"><h2>Recent history</h2><button class="link-btn" data-goto="2">See all →</button></div>
+              <div id="recentList" class="recent-list"><div class="empty-note">No translations yet.</div></div>
+            </div>
+          </div>
+          <div class="card dev-card" id="devCard">
+            <div class="dev-photo-wrap">
+              <img src="assets/developer_profile.png" alt="Md Jubair - Developer" class="dev-photo" />
+            </div>
+            <div class="dev-label">Developed by <b>Md Jubair</b></div>
+            <div class="dev-sub">GETMODDEVICE Official • Android &amp; AI Engineering</div>
+            <a class="dev-chip" href="https://t.me/getmoddevice" target="_blank" rel="noopener">✈️ Connect on Telegram: t.me/getmoddevice</a>
+          </div>
+        </section>
+
+        <!-- 1 · TRANSLATOR -->
+        <section class="screen" data-screen="1">
+          <div class="card tall">
+            <div class="card-head"><h2>Translator</h2><span id="detectLabel" class="tag">auto-detect: —</span></div>
+            <div class="lang-row">
+              <div class="lang-field"><label>From</label><select id="tFrom" class="select"></select></div>
+              <button id="tSwap" class="swap-btn" title="Swap languages">⇄</button>
+              <div class="lang-field"><label>To</label><select id="tTo" class="select"></select></div>
+            </div>
+            <div class="editor-grid">
+              <div class="editor">
+                <div class="editor-head"><span>Source text</span><span id="tCount" class="hint">0 chars</span></div>
+                <textarea id="tInput" class="textarea big" placeholder="Paste or type text to translate instantly…"></textarea>
+                <div class="editor-foot">
+                  <button id="tSpeakSrc" class="chip" title="Speak source">🔊 Speak</button>
+                  <button id="tClear" class="chip">✕ Clear</button>
+                </div>
+              </div>
+              <div class="editor">
+                <div class="editor-head"><span>Translation</span><span id="tMode" class="mode-pill">ready</span></div>
+                <div id="tOutput" class="textarea big output empty">Translation will appear here.</div>
+                <div class="editor-foot">
+                  <button id="tSpeakOut" class="chip">🔊 Speak</button>
+                  <button id="tCopy" class="chip">📋 Copy</button>
+                  <button id="tSave" class="chip">💾 Save</button>
+                </div>
+              </div>
+            </div>
+            <div class="row-between translate-bar">
+              <label class="switch-line"><input type="checkbox" id="tAutoSave" checked /> <span>Save to clipboard history</span></label>
+              <button id="tTranslate" class="btn primary">🌐 Translate</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2 · CLIPBOARD -->
+        <section class="screen" data-screen="2">
+          <div class="card tall">
+            <div class="card-head">
+              <h2>Clipboard history</h2>
+              <div class="head-tools">
+                <input id="histSearch" class="input search" placeholder="Search history…" />
+                <button id="histClear" class="btn danger small">Clear all</button>
+              </div>
+            </div>
+            <p class="info-line">Android version saves copied text while the floating-bubble service runs. In this web demo, saved translations are stored in your browser only.</p>
+            <div id="historyList" class="history-list"></div>
+          </div>
+        </section>
+
+        <!-- 3 · OCR -->
+        <section class="screen" data-screen="3">
+          <div class="card tall">
+            <div class="card-head"><h2>Vision OCR</h2><span class="tag">image → text</span></div>
+            <p class="info-line">Android uses ML Kit Text Recognition. The browser can use <code>TextDetector</code> when available; otherwise a demo result is shown for you to inspect and edit.</p>
+            <div class="ocr-grid">
+              <div class="ocr-left">
+                <label class="dropzone" id="dropzone">
+                  <input type="file" id="ocrFile" accept="image/*" hidden />
+                  <div class="dz-icon">🖼️</div>
+                  <div class="dz-title">Choose an image</div>
+                  <div class="dz-sub">PNG, JPG or screenshot</div>
+                </label>
+                <img id="ocrPreview" class="ocr-preview" alt="Selected image preview" />
+              </div>
+              <div class="ocr-right">
+                <div class="editor-head"><span>Detected text</span><span id="ocrSource" class="hint">—</span></div>
+                <textarea id="ocrText" class="textarea big" rows="8" placeholder="Detected text will appear here. You can edit it…"></textarea>
+                <div class="ocr-actions">
+                  <button id="ocrRun" class="btn primary">🔍 Extract text</button>
+                  <button id="ocrToTranslator" class="btn ghost">Send to Translator →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4 · OFFLINE -->
+        <section class="screen" data-screen="4">
+          <div class="card tall">
+            <div class="card-head"><h2>Offline language models</h2><span id="modelCount" class="tag">0 / 17 downloaded</span></div>
+            <p class="info-line">Android downloads ML Kit models on demand. Here the download is simulated and remembered in <code>localStorage</code>.</p>
+            <div id="modelList" class="model-list"></div>
+          </div>
+        </section>
+
+        <!-- 5 · SETTINGS -->
+        <section class="screen" data-screen="5">
+          <div class="card tall">
+            <div class="card-head"><h2>Bubble settings</h2><span class="tag">web demo</span></div>
+            <div class="settings-list">
+              <label class="setting"><span><b>Floating bubble</b><small>Show draggable translation bubble</small></span><input type="checkbox" id="setBubble" /></label>
+              <label class="setting"><span><b>Auto-translate bubble text</b><small>Translate as you type in the mini card</small></span><input type="checkbox" id="setAuto" /></label>
+              <label class="setting"><span><b>Save clipboard history</b><small>Keep translations in browser storage</small></span><input type="checkbox" id="setHistory" checked /></label>
+              <label class="setting"><span><b>Screen text inspection (simulated)</b><small>Android service is off by default; never reads editable or password fields</small></span><input type="checkbox" id="setAccess" /></label>
+              <label class="setting"><span><b>Dark neon theme</b><small>Matches the Android app palette</small></span><input type="checkbox" id="setTheme" checked disabled /></label>
+            </div>
+            <div class="notice">
+              <b>Privacy note</b>
+              <p>Clipboard history is excluded from cloud backup and device transfer in the Android app. This web demo never uploads history — only the text you explicitly translate is sent to the translation API when online.</p>
+            </div>
+            <div class="about">
+              <b>About this demo</b>
+              <p>Developed by <b>Md Jubair</b> · GETMODDEVICE Official · Android &amp; AI Engineering.</p>
+              <p>Source: <code>ahmedshehjad/OmniTranslate</code> · current <code>main</code>. Built for quick UI/flow checking without installing an APK. Android-only features (SYSTEM_ALERT_WINDOW overlay, Accessibility service, foreground service, AdMob, on-device ML Kit) are represented as simulations.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="ad-strip">
+      <span class="ad-tag">AD</span>
+      <span>AdMob banner placeholder — not shown in the web demo</span>
+      <span class="ad-dots">•••</span>
+    </footer>
+
+    <div id="bubble" class="bubble hidden" role="button" tabindex="0" aria-label="Floating translation bubble">
+      <span>🌐</span>
+    </div>
+    <div id="miniCard" class="mini-card hidden">
+      <div class="mini-head"><b>⚡ Quick translate</b><button id="miniClose" class="icon-btn tiny">✕</button></div>
+      <select id="miniFrom" class="select tiny"></select>
+      <select id="miniTo" class="select tiny"></select>
+      <textarea id="miniInput" class="textarea tiny" rows="2" placeholder="Text…"></textarea>
+      <div id="miniOutput" class="mini-output empty">Result…</div>
+      <div class="mini-foot"><span id="miniMode" class="hint">ready</span><button id="miniTranslate" class="btn primary tiny">Translate</button></div>
+    </div>
+
+    <div id="promoModal" class="modal hidden">
+      <div class="modal-card">
+        <button class="modal-x" data-close="promoModal">✕</button>
+        <div class="modal-logo">🔗</div>
+        <h3>Community</h3>
+        <p>The Android app shows an optional GETMODDEVICE / Telegram promotion. This is a demo placeholder — no external link is opened.</p>
+        <button class="btn primary" data-close="promoModal">Got it</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Mobile navigation">
+    <button class="nav-item active" data-tab="0"><span>🏠</span><small>Home</small></button>
+    <button class="nav-item" data-tab="1"><span>🌐</span><small>Translate</small></button>
+    <button class="nav-item" data-tab="2"><span>📋</span><small>History</small></button>
+    <button class="nav-item" data-tab="3"><span>🖼️</span><small>OCR</small></button>
+    <button class="nav-item" data-tab="4"><span>⬇️</span><small>Offline</small></button>
+    <button class="nav-item" data-tab="5"><span>⚙️</span><small>Settings</small></button>
+  </nav>
+
+  <script src="app.js"></script>
+</body>
+</html>
