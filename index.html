@@ -82,6 +82,8 @@
             <div class="stat card"><span class="stat-ico">🕘</span><b id="statHistory">0</b><small>History items</small></div>
             <div class="stat card"><span class="stat-ico">⭐</span><b id="statFav">0</b><small>Favorites</small></div>
             <div class="stat card"><span class="stat-ico">🧊</span><b id="statBubble">OFF</b><small>Quick bubble</small></div>
+            <div class="stat card"><span class="stat-ico">🪄</span><b id="statMascot">ON</b><small>Mascot</small></div>
+            <div class="stat card"><span class="stat-ico">🎛️</span><b id="statDock">ON</b><small>Action dock</small></div>
           </div>
 
           <div class="two-col">
@@ -189,14 +191,40 @@
             <p class="info-line">Extract text from screenshots or photos. Works best with clear, high-contrast images. The first OCR run may download the recognition engine.</p>
             <div class="ocr-grid">
               <div class="ocr-left">
-                <label class="dropzone" id="dropzone">
-                  <input type="file" id="ocrFile" accept="image/*" hidden />
+                <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Choose image source for OCR">
+                  <input type="file" id="ocrFile" accept="image/png,image/jpeg,image/jpg,image/webp,image/*" hidden />
+                  <input type="file" id="ocrCameraFallback" accept="image/*" capture="environment" hidden />
                   <div class="dz-icon">🖼️</div>
-                  <div class="dz-title">Choose an image</div>
-                  <div class="dz-sub">PNG, JPG, or screenshot</div>
-                </label>
+                  <div class="dz-title">Scan an image</div>
+                  <div class="dz-sub">Upload from gallery or open camera</div>
+                </div>
                 <img id="ocrPreview" class="ocr-preview" alt="Selected image preview" />
                 <div id="ocrProgressWrap" class="ocr-progress hidden"><div class="progress"><i id="ocrProgress"></i></div><span id="ocrStatus" class="hint">Loading…</span></div>
+              </div>
+
+              <div id="scanChoiceModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="scanChoiceTitle">
+                <div class="modal-card">
+                  <h3 id="scanChoiceTitle">Scan image</h3>
+                  <p class="hint">Choose how you want to add an image for OCR.</p>
+                  <div class="modal-actions">
+                    <button id="scanGalleryBtn" class="btn primary" type="button">🖼️ Upload from Gallery</button>
+                    <button id="scanCameraBtn" class="btn ghost" type="button">📷 Open Camera</button>
+                    <button id="scanCancelBtn" class="btn ghost" type="button">Cancel</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="cameraModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="cameraModalTitle">
+                <div class="modal-card camera-card">
+                  <h3 id="cameraModalTitle">Camera capture</h3>
+                  <p id="cameraHint" class="hint">Allow camera access to capture a photo for OCR.</p>
+                  <video id="cameraVideo" class="camera-video" autoplay playsinline muted></video>
+                  <canvas id="cameraCanvas" class="hidden"></canvas>
+                  <div class="modal-actions">
+                    <button id="cameraCaptureBtn" class="btn primary" type="button">Capture photo</button>
+                    <button id="cameraCloseBtn" class="btn ghost" type="button">Close</button>
+                  </div>
+                </div>
               </div>
               <div class="ocr-right">
                 <div class="editor-head"><span>Extracted text</span><span id="ocrSource" class="hint">—</span></div>
@@ -217,7 +245,9 @@
             <div class="card-head"><h2>Settings</h2><span class="tag">workspace</span></div>
             <div class="settings-list">
               <div class="setting"><span><b>Install app</b><small>Add Omni Translate Web to your home screen for fast, app-like access.</small></span><button id="installBtn2" class="btn ghost small">Install</button></div>
-              <label class="setting"><span><b>Quick bubble</b><small>Show a draggable floating bubble for quick translation.</small></span><input type="checkbox" id="setBubble" /></label>
+              <label class="setting"><span><b>Mascot buddy</b><small>Show the animated purple mascot. Tap it to open the real Translator panel.</small></span><input type="checkbox" id="setMascot" checked /></label>
+              <label class="setting"><span><b>Action dock</b><small>Show the independent floating dock for Text Scan, Translate, and Close.</small></span><input type="checkbox" id="setDock" checked /></label>
+              <label class="setting"><span><b>Quick bubble</b><small>Show the compact draggable quick-translate bubble.</small></span><input type="checkbox" id="setBubble" /></label>
               <label class="setting"><span><b>Auto-translate in bubble</b><small>Translate as you type inside the mini translator.</small></span><input type="checkbox" id="setAutoBubble" /></label>
               <label class="setting"><span><b>Translate as I type</b><small>Automatically translate in the main Translator after a short pause.</small></span><input type="checkbox" id="setAutoType" /></label>
               <label class="setting"><span><b>Save history</b><small>Store translations locally in this browser.</small></span><input type="checkbox" id="setHistory" checked /></label>
@@ -231,7 +261,7 @@
 
             <div class="about">
               <b>About Omni Translate Web</b>
-              <p>Installable PWA with translator, voice input, OCR, history/favorites, export/import, keyboard shortcuts, and a quick bubble.</p>
+              <p>Installable PWA with translator, voice input, OCR, history/favorites, export/import, keyboard shortcuts, quick bubble, interactive mascot, and an independent floating action dock.</p>
               <p>Source inspiration: <a href="https://github.com/ahmedshehjad/OmniTranslate" target="_blank" rel="noopener">ahmedshehjad/OmniTranslate</a></p>
             </div>
 
@@ -260,6 +290,60 @@
       <div id="miniOutput" class="mini-output empty">Result…</div>
       <div class="mini-foot"><span id="miniMode" class="hint">ready</span><div class="row-gap"><button id="miniCopy" class="chip">📋</button><button id="miniTranslate" class="btn primary tiny">Translate</button></div></div>
     </div>
+
+    <!-- Interactive mascot + independent action dock -->
+    <div id="mascotWrap" class="mascot-wrap hidden" aria-live="polite">
+      <div id="mascotSpeech" class="mascot-speech hidden" role="status" aria-atomic="true"></div>
+      <button id="mascotBtn" type="button" class="mascot-btn" aria-label="Open Translator panel" aria-describedby="mascotSpeech">
+        <svg class="mascot-svg" viewBox="0 0 140 150" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="mBodyG" x1="0.15" y1="0" x2="0.85" y2="1">
+              <stop offset="0%" stop-color="#dcc4ff"/>
+              <stop offset="45%" stop-color="#9b6dff"/>
+              <stop offset="100%" stop-color="#6941d9"/>
+            </linearGradient>
+            <radialGradient id="mHighlight" cx="35%" cy="30%" r="45%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity=".55"/>
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="mShadow" x="-30%" y="-20%" width="160%" height="180%">
+              <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#7c4dff" flood-opacity=".38"/>
+            </filter>
+          </defs>
+          <ellipse cx="70" cy="136" rx="34" ry="8" fill="rgba(40,20,85,.28)"/>
+          <g class="mascot-float">
+           <g class="mascot-physics">
+            <g class="mascot-halo">
+              <ellipse cx="70" cy="17" rx="18" ry="6" fill="none" stroke="#ffe38a" stroke-width="4" stroke-linecap="round"/>
+              <path class="mascot-star" fill="#ffe38a" d="M98 18l3.2 6.8 7.5.8-5.7 4.8 1.7 7.4-6.7-4-6.7 4 1.7-7.4-5.7-4.8 7.5-.8z"/>
+            </g>
+            <ellipse class="mascot-foot mascot-foot-l" cx="54" cy="124" rx="10" ry="7" fill="#7650d0"/>
+            <ellipse class="mascot-foot mascot-foot-r" cx="86" cy="124" rx="10" ry="7" fill="#7650d0"/>
+            <path class="mascot-arm mascot-arm-l" d="M38 86 C24 92, 22 104, 32 108" fill="none" stroke="#865de0" stroke-width="8" stroke-linecap="round"/>
+            <path class="mascot-arm mascot-arm-r" d="M102 86 C116 92, 118 104, 108 108" fill="none" stroke="#865de0" stroke-width="8" stroke-linecap="round"/>
+            <path class="mascot-body" d="M70 34 C42 34, 28 52, 28 74 C28 102, 46 120, 70 120 C94 120, 112 102, 112 74 C112 52, 98 34, 70 34Z" fill="url(#mBodyG)" filter="url(#mShadow)"/>
+            <path d="M70 36 C46 36, 33 52, 33 73 C33 86, 40 95, 50 99 C43 91, 40 82, 40 72 C40 54, 52 41, 70 39 C82 38, 93 42, 101 51 C95 42, 84 36, 70 36Z" fill="url(#mHighlight)"/>
+            <ellipse cx="46" cy="87" rx="8" ry="5" fill="#ff8fb3" opacity=".55"/>
+            <ellipse cx="94" cy="87" rx="8" ry="5" fill="#ff8fb3" opacity=".55"/>
+            <g class="mascot-face">
+              <g class="mascot-eye mascot-eye-l"><ellipse cx="56" cy="76" rx="8.5" ry="10" fill="#fff"/><g class="mascot-pupil-g mascot-pupil-g-l"><circle cx="58" cy="78" r="4.2" fill="#2d1f52"/><circle cx="60" cy="75" r="1.8" fill="#fff"/></g></g>
+              <g class="mascot-eye mascot-eye-r"><ellipse cx="84" cy="76" rx="8.5" ry="10" fill="#fff"/><g class="mascot-pupil-g mascot-pupil-g-r"><circle cx="86" cy="78" r="4.2" fill="#2d1f52"/><circle cx="88" cy="75" r="1.8" fill="#fff"/></g></g>
+              <path class="mascot-mouth" d="M61 95 Q70 103 79 95" fill="none" stroke="#3b2668" stroke-width="3.4" stroke-linecap="round"/>
+            </g>
+           </g>
+          </g>
+        </svg>
+      </button>
+    </div>
+
+    <div id="actionDock" class="action-dock hidden" role="toolbar" aria-label="Floating action dock">
+      <div class="dock-grip" aria-hidden="true">⋮⋮</div>
+      <button id="dockScanBtn" type="button" class="dock-btn" aria-label="Text scan" title="Text Scan"><span class="dock-ico">▣</span><span class="dock-lbl">Scan</span></button>
+      <button id="dockTranslateBtn" type="button" class="dock-btn" aria-label="Open translator" title="Translate"><span class="dock-ico">文A</span><span class="dock-lbl">Translate</span></button>
+      <button id="dockCloseBtn" type="button" class="dock-btn danger" aria-label="Close mascot and dock" title="Close"><span class="dock-ico">✕</span><span class="dock-lbl">Close</span></button>
+    </div>
+
+    <button id="floatRestoreBtn" type="button" class="float-restore hidden" aria-label="Show mascot and dock">🪄 Show mascot &amp; dock</button>
 
     <div id="toast" class="toast"></div>
   </div>
