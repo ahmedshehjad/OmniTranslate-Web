@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Omni Translate Web" />
-  <meta name="description" content="Omni Translate Web — fast, installable translation workspace with history, OCR, voice, and a floating quick-translate bubble." />
+  <meta name="description" content="Omni Translate Web — fast, installable translation workspace with history, OCR, voice, an interactive mascot, and a floating action dock." />
   <title>Omni Translate Web</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
@@ -40,7 +40,6 @@
         <button id="installBtn" class="icon-btn hidden" title="Install app" aria-label="Install app">⬇️</button>
         <button id="themeBtn" class="icon-btn" title="Toggle theme" aria-label="Toggle theme">◐</button>
         <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Settings">⚙️</button>
-        <button id="bubbleBtn" class="icon-btn bubble-btn" title="Toggle quick bubble" aria-label="Toggle quick bubble">🧊</button>
       </div>
     </header>
 
@@ -64,7 +63,7 @@
             <div class="hero-copy">
               <div class="eyebrow">SMART TRANSLATION WORKSPACE</div>
               <h1>Translate faster.<br /><span class="grad">Work smarter, anywhere.</span></h1>
-              <p>Text, voice, images, history, favorites, and a floating quick-translate bubble — all in one installable web app.</p>
+              <p>Text, voice, images, history, favorites, an interactive mascot, and a floating action dock — all in one installable web app.</p>
               <div class="hero-actions">
                 <button class="btn primary" data-goto="1">🌐 Open Translator</button>
                 <button class="btn ghost" id="dashInstallBtn">⬇️ Install App</button>
@@ -81,7 +80,6 @@
             <div class="stat card"><span class="stat-ico">⚡</span><b id="statLast">—</b><small>Last mode</small></div>
             <div class="stat card"><span class="stat-ico">🕘</span><b id="statHistory">0</b><small>History items</small></div>
             <div class="stat card"><span class="stat-ico">⭐</span><b id="statFav">0</b><small>Favorites</small></div>
-            <div class="stat card"><span class="stat-ico">🧊</span><b id="statBubble">OFF</b><small>Quick bubble</small></div>
             <div class="stat card"><span class="stat-ico">🪄</span><b id="statMascot">ON</b><small>Mascot</small></div>
             <div class="stat card"><span class="stat-ico">🎛️</span><b id="statDock">ON</b><small>Action dock</small></div>
           </div>
@@ -247,8 +245,6 @@
               <div class="setting"><span><b>Install app</b><small>Add Omni Translate Web to your home screen for fast, app-like access.</small></span><button id="installBtn2" class="btn ghost small">Install</button></div>
               <label class="setting"><span><b>Mascot buddy</b><small>Show the animated purple mascot. Tap it to open the real Translator panel.</small></span><input type="checkbox" id="setMascot" checked /></label>
               <label class="setting"><span><b>Action dock</b><small>Show the independent floating dock for Text Scan, Translate, and Close.</small></span><input type="checkbox" id="setDock" checked /></label>
-              <label class="setting"><span><b>Quick bubble</b><small>Show the compact draggable quick-translate bubble.</small></span><input type="checkbox" id="setBubble" /></label>
-              <label class="setting"><span><b>Auto-translate in bubble</b><small>Translate as you type inside the mini translator.</small></span><input type="checkbox" id="setAutoBubble" /></label>
               <label class="setting"><span><b>Translate as I type</b><small>Automatically translate in the main Translator after a short pause.</small></span><input type="checkbox" id="setAutoType" /></label>
               <label class="setting"><span><b>Save history</b><small>Store translations locally in this browser.</small></span><input type="checkbox" id="setHistory" checked /></label>
               <label class="setting"><span><b>Compact layout</b><small>Reduce spacing for dense, power-user workflows.</small></span><input type="checkbox" id="setCompact" /></label>
@@ -261,7 +257,7 @@
 
             <div class="about">
               <b>About Omni Translate Web</b>
-              <p>Installable PWA with translator, voice input, OCR, history/favorites, export/import, keyboard shortcuts, quick bubble, interactive mascot, and an independent floating action dock.</p>
+              <p>Installable PWA with translator, voice input, OCR, history/favorites, export/import, keyboard shortcuts, an interactive mascot, and an independent floating action dock.</p>
               <p>Source inspiration: <a href="https://github.com/ahmedshehjad/OmniTranslate" target="_blank" rel="noopener">ahmedshehjad/OmniTranslate</a></p>
             </div>
 
@@ -279,16 +275,6 @@
           </div>
         </section>
       </main>
-    </div>
-
-    <div id="bubble" class="bubble hidden" role="button" tabindex="0" aria-label="Quick translate bubble"><span>🌐</span></div>
-    <div id="miniCard" class="mini-card hidden">
-      <div class="mini-head"><b>⚡ Quick translate</b><button id="miniClose" class="icon-btn tiny">✕</button></div>
-      <select id="miniFrom" class="select tiny"></select>
-      <select id="miniTo" class="select tiny"></select>
-      <textarea id="miniInput" class="textarea tiny" rows="2" placeholder="Text…"></textarea>
-      <div id="miniOutput" class="mini-output empty">Result…</div>
-      <div class="mini-foot"><span id="miniMode" class="hint">ready</span><div class="row-gap"><button id="miniCopy" class="chip">📋</button><button id="miniTranslate" class="btn primary tiny">Translate</button></div></div>
     </div>
 
     <!-- Interactive mascot + independent action dock -->

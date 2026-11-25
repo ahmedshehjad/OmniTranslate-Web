@@ -30,8 +30,7 @@ const store = {
 };
 const state = {
   tab:0, history:store.get('ot_history',[]), favorites:store.get('ot_favorites',[]), cache:store.get('ot_cache',{}),
-  settings:Object.assign({mascot:true,dock:true,bubble:false,autoBubble:false,autoType:false,history:true,compact:false,theme:'dark'}, store.get('ot_settings',{})),
-  bubblePos:store.get('ot_bubble_pos',null),
+  settings:Object.assign({mascot:true,dock:true,autoType:false,history:true,compact:false,theme:'dark'}, store.get('ot_settings',{})),
   mascotPos:store.get('ot_mascot_pos',null),
   dockPos:store.get('ot_dock_pos',null),
   floatHidden:store.get('ot_float_hidden',false),
@@ -44,9 +43,9 @@ function lang(code){ return LANGS.find(l=>l.code===code); }
 function langLabel(code){ const l=lang(code); return l ? l.flag+' '+l.native : String(code||'').toUpperCase(); }
 function populateSelect(sel, selected){
   if(!sel) return;
-  const auto = (sel.id==='tFrom'||sel.id==='qFrom'||sel.id==='miniFrom') ? '<option value="auto">✨ Auto detect</option>' : '';
+  const auto = (sel.id==='tFrom'||sel.id==='qFrom') ? '<option value="auto">✨ Auto detect</option>' : '';
   sel.innerHTML = auto + LANGS.map(l=>'<option value="'+l.code+'">'+l.flag+' '+l.native+' · '+l.name+'</option>').join('');
-  sel.value = selected || ((sel.id==='tTo'||sel.id==='qTo'||sel.id==='miniTo')?'bn':'en');
+  sel.value = selected || ((sel.id==='tTo'||sel.id==='qTo')?'bn':'en');
 }
 function detectLanguage(text){
   const s=String(text||'');
@@ -391,13 +390,9 @@ function updateNetBadge(){
 }
 function renderAll(){
   renderHistory(); renderFavorites(); updateNetBadge();
-  $('#statBubble').textContent = state.settings.bubble ? 'ON':'OFF';
   const sm=$('#statMascot'); if(sm) sm.textContent = (state.settings.mascot && !state.floatHidden) ? 'ON':'OFF';
   const sd=$('#statDock'); if(sd) sd.textContent = (state.settings.dock && !state.floatHidden) ? 'ON':'OFF';
   $('#statLast').textContent = state.lastMode || '—';
-  $('#bubbleBtn').classList.toggle('active', !!state.settings.bubble);
-  $('#bubble').classList.toggle('hidden', !state.settings.bubble);
-  if(!state.settings.bubble) $('#miniCard').classList.add('hidden');
   document.body.classList.toggle('compact', !!state.settings.compact);
   document.body.classList.toggle('light', state.settings.theme==='light');
   $('#themeBtn').textContent = state.settings.theme==='light' ? '☀️' : '◐';
@@ -448,9 +443,6 @@ async function onTranslateMain(){
 async function onTranslateQuick(){
   const r = await runTranslationUI({fromSel:$('#qFrom'),toSel:$('#qTo'),inputEl:$('#qInput'),outEl:$('#qResult'),modeEl:$('#qMode'),save:state.settings.history});
   if(r && r.text){ $('#qResult').classList.remove('empty'); }
-}
-async function onTranslateMini(){
-  const r = await runTranslationUI({fromSel:$('#miniFrom'),toSel:$('#miniTo'),inputEl:$('#miniInput'),outEl:$('#miniOutput'),modeEl:$('#miniMode'),save:false});
 }
 
 function swapLangs(a,b){
@@ -535,46 +527,6 @@ async function runOCR(){
   }
 }
 
-/* Bubble */
-function initBubble(){
-  if(initBubble._done) return;
-  const bubble=$('#bubble'); const card=$('#miniCard');
-  if(!bubble || !card) return;
-  initBubble._done = true;
-  const clampBubblePos = (pos)=>{
-    const w=bubble.offsetWidth||60, h=bubble.offsetHeight||60;
-    const x=clamp((pos&&typeof pos.x==='number')?pos.x:window.innerWidth-82, 6, Math.max(6, window.innerWidth-w-6));
-    const y=clamp((pos&&typeof pos.y==='number')?pos.y:window.innerHeight-146, 6, Math.max(6, window.innerHeight-h-6));
-    return {x,y};
-  };
-  if(state.bubblePos){
-    state.bubblePos = clampBubblePos(state.bubblePos);
-    bubble.style.left=state.bubblePos.x+'px'; bubble.style.top=state.bubblePos.y+'px'; bubble.style.right='auto'; bubble.style.bottom='auto';
-  }
-  let dragging=false, moved=false, startX=0, startY=0, offX=0, offY=0;
-  function placeCard(x,y){ card.style.left=Math.min(x, window.innerWidth-320)+'px'; card.style.top=Math.max(8,y-210)+'px'; card.style.right='auto'; card.style.bottom='auto'; }
-  window.addEventListener('resize', ()=>{
-    if(!state.bubblePos) return;
-    state.bubblePos = clampBubblePos(state.bubblePos);
-    bubble.style.left=state.bubblePos.x+'px'; bubble.style.top=state.bubblePos.y+'px'; bubble.style.right='auto'; bubble.style.bottom='auto';
-    placeCard(state.bubblePos.x, state.bubblePos.y);
-    store.set('ot_bubble_pos', state.bubblePos);
-  });
-  bubble.addEventListener('pointerdown', e=>{ dragging=true; moved=false; startX=e.clientX; startY=e.clientY; const r=bubble.getBoundingClientRect(); offX=e.clientX-r.left; offY=e.clientY-r.top; bubble.setPointerCapture(e.pointerId); });
-  bubble.addEventListener('pointermove', e=>{
-    if(!dragging) return;
-    const x=Math.max(6, Math.min(window.innerWidth-66, e.clientX-offX));
-    const y=Math.max(6, Math.min(window.innerHeight-66, e.clientY-offY));
-    if(Math.abs(e.clientX-startX)+Math.abs(e.clientY-startY)>6) moved=true;
-    bubble.style.left=x+'px'; bubble.style.top=y+'px'; bubble.style.right='auto'; bubble.style.bottom='auto';
-    state.bubblePos={x,y}; placeCard(x,y);
-  });
-  bubble.addEventListener('pointerup', (e)=>{ if(!dragging) return; dragging=false; try{ bubble.releasePointerCapture(e.pointerId); }catch(_){} store.set('ot_bubble_pos', state.bubblePos); if(!moved) card.classList.toggle('hidden'); });
-  bubble.addEventListener('pointercancel', (e)=>{ if(!dragging) return; dragging=false; try{ bubble.releasePointerCapture(e.pointerId); }catch(_){} });
-  bubble.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); card.classList.toggle('hidden'); }});
-  let t=null; $('#miniInput').addEventListener('input', ()=>{ clearTimeout(t); if(state.settings.autoBubble) t=setTimeout(onTranslateMini, 650); });
-}
-
 /* Install */
 function initInstall(){
   window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); state.deferredInstall=e; $('#installBtn').classList.remove('hidden'); $('#dashInstallBtn').disabled=false; });
@@ -590,15 +542,12 @@ function wire(){
   $$('.nav-item[data-tab]').forEach(n=>n.addEventListener('click', ()=>setTab(n.dataset.tab)));
   $$('[data-goto]').forEach(b=>b.addEventListener('click', ()=>setTab(b.dataset.goto)));
 
-  ['tFrom','tTo','qFrom','qTo','miniFrom','miniTo'].forEach((id,i)=>populateSelect($('#'+id), (id.endsWith('To')?'bn':'en')));
+  ['tFrom','tTo','qFrom','qTo'].forEach((id,i)=>populateSelect($('#'+id), (id.endsWith('To')?'bn':'en')));
 
   $('#tSwap').onclick=()=>swapLangs($('#tFrom'),$('#tTo'));
   $('#qSwap').onclick=()=>swapLangs($('#qFrom'),$('#qTo'));
   $('#tTranslate').onclick=onTranslateMain;
   $('#qTranslate').onclick=onTranslateQuick;
-  $('#miniTranslate').onclick=onTranslateMini;
-  $('#miniClose').onclick=()=>$('#miniCard').classList.add('hidden');
-  $('#miniCopy').onclick=()=>copyText($('#miniOutput').textContent);
 
   $('#tInput').addEventListener('input', ()=>{ $('#tCount').textContent=countStats($('#tInput').value); if(state.settings.autoType){ clearTimeout($('#tInput')._t); $('#tInput')._t=setTimeout(onTranslateMain, 700); } });
   $('#qInput').addEventListener('keydown', e=>{ if(e.key==='Enter' && (e.ctrlKey||e.metaKey)) onTranslateQuick(); });
@@ -661,16 +610,13 @@ function wire(){
   const bindSet=(id,key,onChange)=>{ const el=$('#'+id); if(!el) return; el.checked=!!state.settings[key]; el.addEventListener('change', e=>{ state.settings[key]=e.target.checked; if(onChange) onChange(e.target.checked); store.set('ot_settings',state.settings); renderAll(); }); };
   bindSet('setMascot','mascot', v=>{ if(v) state.floatHidden=false; store.set('ot_float_hidden',state.floatHidden); });
   bindSet('setDock','dock', v=>{ if(v) state.floatHidden=false; store.set('ot_float_hidden',state.floatHidden); });
-  bindSet('setBubble','bubble');
-  bindSet('setAutoBubble','autoBubble');
   bindSet('setAutoType','autoType');
   bindSet('setHistory','history');
   bindSet('setCompact','compact');
 
   // top actions
   $('#settingsBtn').onclick=()=>setTab(4);
-  $('#bubbleBtn').onclick=()=>{ state.settings.bubble=!state.settings.bubble; $('#setBubble').checked=state.settings.bubble; store.set('ot_settings',state.settings); renderAll(); toast(state.settings.bubble?'Quick bubble ON':'Quick bubble OFF'); };
- 
+
   $('#themeBtn').onclick=()=>{ state.settings.theme=state.settings.theme==='light'?'dark':'light'; store.set('ot_settings',state.settings); renderAll(); };
   $('#installBtn').onclick=triggerInstall; $('#installBtn2').onclick=triggerInstall; $('#dashInstallBtn').onclick=triggerInstall;
 
@@ -690,7 +636,7 @@ function initSplash(){
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
-  initInstall(); wire(); initBubble(); initMascotAndDock(); renderAll(); initSplash(); setTab(0);
+  initInstall(); wire(); initMascotAndDock(); renderAll(); initSplash(); setTab(0);
 });
 
 /* =========================
@@ -703,7 +649,7 @@ const MASCOT_DIALOGUES = [
   "Need words? I’ve got you.",
   "Try the dock: Scan, Translate, Close.",
   "Your text stays yours. 🔒",
-  "Small bubble, big language power.",
+  "Tiny buddy, big language power.",
   "Wheee! I love bouncing! 💜",
   "Carrom mode: activated!",
   "Boing! That tickled.",
